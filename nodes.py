@@ -313,8 +313,6 @@ class RenderNLFPoses:
 
             pose_3d_coco_first_driving_frame = process_data_to_COCO_format(pose_3d_first_driving_frame)
             poses_2d_ref = ref_dw_pose_input[0]['bodies']['candidate'][0][:14]
-            poses_2d_ref[:, 0] = poses_2d_ref[:, 0] * width
-            poses_2d_ref[:, 1] = poses_2d_ref[:, 1] * height
 
             poses_2d_subset = ref_dw_pose_input[0]['bodies']['subset'][0][:14]
             pose_3d_coco_first_driving_frame = pose_3d_coco_first_driving_frame[:14]
