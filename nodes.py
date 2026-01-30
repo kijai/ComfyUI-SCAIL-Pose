@@ -137,9 +137,6 @@ def scale_faces(poses, pose_2d_ref):
         scaled_candidate = (candidate_np - body_center) * scale_n + body_center
         poses[i]['bodies']['candidate'][0] = scaled_candidate
 
-    # In-place modification
-    pose['faces'][0] = scaled_face
-
     return scale_n
 
 class PoseDetectionVitPoseToDWPose:

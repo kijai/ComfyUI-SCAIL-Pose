@@ -152,14 +152,14 @@ def draw_bodypose_with_feet(canvas, candidate, subset):
             index = subset[n][np.array(limbSeq[i]) - 1]
             if -1 in index:
                 continue
-            Y = candidate[index.astype(int), 0] * float(W)
-            X = candidate[index.astype(int), 1] * float(H)
-            mX = np.mean(X)
-            mY = np.mean(Y)
-            length = ((X[0] - X[1]) ** 2 + (Y[0] - Y[1]) ** 2) ** 0.5
-            angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+            x = candidate[index.astype(int), 0] * float(W)
+            y = candidate[index.astype(int), 1] * float(H)
+            mX = np.mean(x)
+            mY = np.mean(y)
+            length = ((x[0] - x[1]) ** 2 + (y[0] - y[1]) ** 2) ** 0.5
+            angle = math.degrees(math.atan2(y[0] - y[1], x[0] - x[1]))
             polygon = cv2.ellipse2Poly(
-                (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
+                (int(mX), int(mY)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
             )
             cv2.fillConvexPoly(canvas, polygon, colors[i])
 
@@ -168,14 +168,14 @@ def draw_bodypose_with_feet(canvas, candidate, subset):
             index = subset[n][np.array(foot_limbSeq[i]) - 1]
             if -1 in index:
                 continue
-            Y = candidate[index.astype(int), 0] * float(W)
-            X = candidate[index.astype(int), 1] * float(H)
-            mX = np.mean(X)
-            mY = np.mean(Y)
-            length = ((X[0] - X[1]) ** 2 + (Y[0] - Y[1]) ** 2) ** 0.5
-            angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+            x = candidate[index.astype(int), 0] * float(W)
+            y = candidate[index.astype(int), 1] * float(H)
+            mX = np.mean(x)
+            mY = np.mean(y)
+            length = ((x[0] - x[1]) ** 2 + (y[0] - y[1]) ** 2) ** 0.5
+            angle = math.degrees(math.atan2(y[0] - y[1], x[0] - x[1]))
             polygon = cv2.ellipse2Poly(
-                (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
+                (int(mX), int(mY)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
             )
             cv2.fillConvexPoly(canvas, polygon, colors_feet[i])
 
@@ -264,21 +264,21 @@ def draw_bodypose_augmentation(canvas, candidate, subset, drop_aug=True, shift_a
             index = subset[n][np.array(limbSeq[i]) - 1]
             if -1 in index:
                 continue
-            Y = candidate[index.astype(int), 0] * float(W)
-            X = candidate[index.astype(int), 1] * float(H)
+            x = candidate[index.astype(int), 0] * float(W)
+            y = candidate[index.astype(int), 1] * float(H)
 
             if i in drop_indices:
                 continue
 
-            mX = np.mean(X)   # Calculate the midpoint between two joints
-            mY = np.mean(Y)
-            length = ((X[0] - X[1]) ** 2 + (Y[0] - Y[1]) ** 2) ** 0.5
+            mX = np.mean(x)
+            mY = np.mean(y)
+            length = ((x[0] - x[1]) ** 2 + (y[0] - y[1]) ** 2) ** 0.5
             if i in shift_indices:
                 mX = mX + random.uniform(-length/4, length/4)
                 mY = mY + random.uniform(-length/4, length/4)
-            angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+            angle = math.degrees(math.atan2(y[0] - y[1], x[0] - x[1]))
             polygon = cv2.ellipse2Poly(
-                (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
+                (int(mX), int(mY)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
             )
             cv2.fillConvexPoly(canvas, polygon, colors[i])
 
@@ -354,14 +354,14 @@ def draw_bodypose(canvas, candidate, subset):
             index = subset[n][np.array(limbSeq[i]) - 1]
             if -1 in index:
                 continue
-            Y = candidate[index.astype(int), 0] * float(W)
-            X = candidate[index.astype(int), 1] * float(H)
-            mX = np.mean(X)
-            mY = np.mean(Y)
-            length = ((X[0] - X[1]) ** 2 + (Y[0] - Y[1]) ** 2) ** 0.5
-            angle = math.degrees(math.atan2(X[0] - X[1], Y[0] - Y[1]))
+            x = candidate[index.astype(int), 0] * float(W)
+            y = candidate[index.astype(int), 1] * float(H)
+            mX = np.mean(x)
+            mY = np.mean(y)
+            length = ((x[0] - x[1]) ** 2 + (y[0] - y[1]) ** 2) ** 0.5
+            angle = math.degrees(math.atan2(y[0] - y[1], x[0] - x[1]))
             polygon = cv2.ellipse2Poly(
-                (int(mY), int(mX)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
+                (int(mX), int(mY)), (int(length / 2), stickwidth), int(angle), 0, 360, 1
             )
             cv2.fillConvexPoly(canvas, polygon, colors[i])
 
