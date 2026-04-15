@@ -79,9 +79,14 @@ def shift_dwpose_according_to_nlf(smpl_poses, aligned_poses, ori_intrinstics, mo
 
         # For each person inside, take the joints and deform them; also modify 2D; if 3D does not exist, remove the hand/face from 2D as well
         for person_idx, person_joints in enumerate(persons_joints_list):
-            face = poses_list["faces"][person_idx]
-            right_hand = poses_list["hands"][2 * person_idx]
-            left_hand = poses_list["hands"][2 * person_idx + 1]
+            # Guard against missing hands/faces from DWPose
+            has_face = len(poses_list["faces"]) > person_idx
+            has_right_hand = len(poses_list["hands"]) > 2 * person_idx
+            has_left_hand = len(poses_list["hands"]) > 2 * person_idx + 1
+
+            face = poses_list["faces"][person_idx] if has_face else None
+            right_hand = poses_list["hands"][2 * person_idx] if has_right_hand else None
+            left_hand = poses_list["hands"][2 * person_idx + 1] if has_left_hand else None
             candidate = poses_list["bodies"]["candidate"][person_idx]
             # Note: This is not COCO format
             person_joint_15_2d_shift = p3d_single_p2d(person_joints[15], modified_intrinstics) - p3d_single_p2d(person_joints[15], ori_intrinstics) if person_joints[15, 2] > 0.01 else np.array([0.0, 0.0])  # face
@@ -91,12 +96,15 @@ def shift_dwpose_according_to_nlf(smpl_poses, aligned_poses, ori_intrinstics, mo
             if swap_hands:
                 person_joint_20_2d_shift, person_joint_21_2d_shift = person_joint_21_2d_shift, person_joint_20_2d_shift
 
-            face[:, 0] += person_joint_15_2d_shift[0] / width
-            face[:, 1] += person_joint_15_2d_shift[1] / height
-            right_hand[:, 0] += person_joint_21_2d_shift[0] / width
-            right_hand[:, 1] += person_joint_21_2d_shift[1] / height
-            left_hand[:, 0] += person_joint_20_2d_shift[0] / width
-            left_hand[:, 1] += person_joint_20_2d_shift[1] / height
+            if face is not None:
+                face[:, 0] += person_joint_15_2d_shift[0] / width
+                face[:, 1] += person_joint_15_2d_shift[1] / height
+            if right_hand is not None:
+                right_hand[:, 0] += person_joint_21_2d_shift[0] / width
+                right_hand[:, 1] += person_joint_21_2d_shift[1] / height
+            if left_hand is not None:
+                left_hand[:, 0] += person_joint_20_2d_shift[0] / width
+                left_hand[:, 1] += person_joint_20_2d_shift[1] / height
             candidate[:, 0] += person_joint_15_2d_shift[0] / width
             candidate[:, 1] += person_joint_15_2d_shift[1] / height
 
@@ -104,8 +112,10 @@ def shift_dwpose_according_to_nlf(smpl_poses, aligned_poses, ori_intrinstics, mo
             # apply camera scale around wrist (hand[0]).
             if scale_hands:
                 for dim in [0,1]:
-                    right_hand[:, dim] = scale_around_center(right_hand, right_hand[0, :], dim=dim, scale=scales[dim])
-                    left_hand[:, dim] = scale_around_center(left_hand, left_hand[0, :], dim=dim, scale=scales[dim])
+                    if right_hand is not None:
+                        right_hand[:, dim] = scale_around_center(right_hand, right_hand[0, :], dim=dim, scale=scales[dim])
+                    if left_hand is not None:
+                        left_hand[:, dim] = scale_around_center(left_hand, left_hand[0, :], dim=dim, scale=scales[dim])
 
 
 def get_single_pose_cylinder_specs(args, include_missing=False):

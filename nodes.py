@@ -98,6 +98,10 @@ def scale_faces(poses, pose_2d_ref):
     face_0 = pose_0['faces']  # shape: (1, 68, 2)
     face_ref = ref['faces']
 
+    # Guard against missing face keypoints (e.g., subject facing away)
+    if len(face_0) == 0 or len(face_ref) == 0:
+        return 1.0
+
     # Extract numpy arrays
     face_0 = np.array(face_0[0])      # (68, 2)
     face_ref = np.array(face_ref[0])
@@ -128,11 +132,12 @@ def scale_faces(poses, pose_2d_ref):
 
     for i, pose in enumerate(poses):
         face = pose['faces']
-        # Extract numpy array
-        face = np.array(face[0])      # (68, 2)
-        center = face[center_idx]
-        scaled_face = (face - center) * scale_n + center
-        poses[i]['faces'][0] = scaled_face
+        if len(face) > 0:
+            # Extract numpy array
+            face = np.array(face[0])      # (68, 2)
+            center = face[center_idx]
+            scaled_face = (face - center) * scale_n + center
+            poses[i]['faces'][0] = scaled_face
 
         body = pose['bodies']
         candidate = body['candidate']
@@ -140,9 +145,6 @@ def scale_faces(poses, pose_2d_ref):
         body_center = candidate_np[0]
         scaled_candidate = (candidate_np - body_center) * scale_n + body_center
         poses[i]['bodies']['candidate'][0] = scaled_candidate
-
-    # In-place modification
-    pose['faces'][0] = scaled_face
 
     return scale_n
 
